@@ -29,7 +29,7 @@ pub struct Token {
 }
 #[allow(unused)]
 
-
+// TextSpan implementation   
 impl TextSpan {
 
     pub fn new(start: usize, end: usize, literal: String) -> Self {
@@ -37,7 +37,7 @@ impl TextSpan {
     }
         
     pub fn length(&self) -> usize {
-        self.end - self.start
+        self.end - self.start 
     }
 }
 
@@ -46,11 +46,15 @@ impl Token {
         Self { kind, span }
     }
 }
-
-pub struct Lexer<'a> {
+ pub struct Lexer<'a> {
     input:  &'a str,
     current_pos: usize,
 }
+
+// Lexer implementation 
+// Lexer generally works by consuming characters from the input string and 
+// converting them into tokens. It keeps track of the current position in the input string
+// and uses this position to determine the start and end of each token.
 
 impl<'a> Lexer<'a> {
     pub fn new(input: &'a str) -> Self {
@@ -69,18 +73,18 @@ impl<'a> Lexer<'a> {
             return None;
         }
 
-        let start = self.current_pos;
-        let c = self.current_char().unwrap();
-        let mut kind = TokenKind::BadToken;
+        let start: usize = self.current_pos;
+        let c: char = self.current_char().unwrap();
+        let mut kind: TokenKind = TokenKind::BadToken;
         
         if Self::is_number_start(&c) {
-            let number = self.consume_number();
+            let number: i64 = self.consume_number();
             kind = TokenKind::Number(number);
         }
 
-        let end = self.current_pos;
-        let literal = self.input[start..end].to_string();
-        let span = TextSpan::new(start, end, literal);
+        let end: usize = self.current_pos;
+        let literal: String = self.input[start..end].to_string();
+        let span: TextSpan = TextSpan::new(start, end, literal);
         Some(Token::new(kind, span))
     }
     
@@ -103,7 +107,8 @@ impl<'a> Lexer<'a> {
       
    fn consume_number(&mut self) -> i64 {
     let mut number = 0;
-    while let Some( c) = self.consume() {
+    while let Some(_) = self.current_char() {
+        let c = self.consume().unwrap();
         if c.is_digit(10) {
             number = number * 10 + c.to_digit(10).unwrap() as i64;
         } else {
@@ -113,4 +118,11 @@ impl<'a> Lexer<'a> {
     number
    
    }
+
+   fn peek_char(&self) -> Option<char>{
+    self.input.chars().nth(self.current_pos + 1)
+   }
+
+   
 }
+
